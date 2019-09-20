@@ -140,21 +140,29 @@ def run():
             continue
 
         if user_choice == 0:
-            exit(0)
+            should_run = False
+
         elif user_choice == 1:
             print(item_list)
+
         elif user_choice == 2:
             add_item(item_list)
+
         elif user_choice == 3:
             remove_item(item_list)
+
         elif user_choice == 4:
             print(make_tuple_of_even(item_list))
+
         elif user_choice == 5:
             print(sum_of_ints(item_list))
+
         elif user_choice == 6:
             print(word_count(item_list))
+
         elif user_choice == 7:
             make_set_union()
+
         elif user_choice == 8:
             make_dict(item_list)
 
