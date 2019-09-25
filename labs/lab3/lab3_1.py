@@ -1,4 +1,6 @@
 import textwrap as tw
+import librosa
+import numpy as np
 
 from lab3.Book import Book
 
