@@ -104,8 +104,8 @@ def make_set_union():
     set_str1 = input('Введите первое множество через запятую: ')
     set_str2 = input('Введите второе множество через запятую: ')
 
-    set1 = set(set_str1.replace(' ', '').split(','))
-    set2 = set(set_str2.replace(' ', '').split(','))
+    set1 = set(set_str1.split(','))
+    set2 = set(set_str2.split(','))
     union = sorted(set1.union(set2))
 
     print(union)

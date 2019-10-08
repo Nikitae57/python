@@ -79,7 +79,7 @@ def run():
     right_tr = lambda a, b: a * b / 2
     right_pol = lambda n, a: n / 4 * a**2 * (1 / m.tan(m.pi / n))
 
-    list = [[rect, rect, right_tr, rect, right_pol], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]
+    list = [[rect, rect, right_tr, rect, right_pol, rect], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]
 
     for func in list[0]:
         result = func(list[1][0], list[1][1])
