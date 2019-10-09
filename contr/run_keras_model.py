@@ -16,12 +16,14 @@ loaded_model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 # summary = loaded_model.summary()
-img = np.invert(Image.open('img/img3.png').convert('L')).ravel().reshape(28, 28)
+img = Image.open('img/img.png').convert('L')
+img.thumbnail((28, 28), Image.ANTIALIAS)
+img = np.invert(img).reshape(28, 28)
 img_centered_to_feed = util.center_image(img)
 
 img_centered_to_save = np.asarray(img_centered_to_feed, dtype=np.int8)
 i = Image.fromarray(img_centered_to_save, 'L')
-i.save('img/img3_c.png')
+i.save('img/img_c.png')
 
 img_centered_to_feed = img_centered_to_feed.reshape(1, 28, 28, 1)
 predicted_number = np.argmax(loaded_model.predict(img_centered_to_feed)[0])
