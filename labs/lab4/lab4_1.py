@@ -136,14 +136,14 @@ lePublisher = window.findChild(QtWidgets.QLineEdit, 'lePublisher')
 leSearch = window.findChild(QtWidgets.QLineEdit, 'leSearch')
 
 sbNPages = window.findChild(QtWidgets.QSpinBox, 'sbNPages')
-sbPrice = window.findChild(QtWidgets.QDoubleSpinBox, 'sbPrice')
+sbPrice = window.findChild(QtWidgets.QDoubleSpinBox, 'dsbPrice')
 sbPublicationYear = window.findChild(QtWidgets.QSpinBox, 'sbPublicationYear')
 
 cbMessageType = window.findChild(QtWidgets.QComboBox, 'cbMessageType')
 
 cbWithIcon = window.findChild(QtWidgets.QCheckBox, 'cbWithIcon')
 
-tvBooks = window.findChild(QtWidgets.QTableView, 'tvBooks')
+tvBooks = window.findChild(QtWidgets.QTableView, 'twBooks')
 tvBooks.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
 btnAdd.clicked.connect(btn_add_clicked)
