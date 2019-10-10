@@ -86,7 +86,11 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QDoubleSpinBox" name="dsbPrice"/>
+      <widget class="QDoubleSpinBox" name="dsbPrice">
+       <property name="maximum">
+        <double>999999999.990000009536743</double>
+       </property>
+      </widget>
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="label_7">

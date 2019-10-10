@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, uic
+from PyQt5.QtWidgets import QAction
 import sys
 from lab3.Book import Book
 import pickle as p
@@ -25,7 +26,7 @@ class UI(QtWidgets.QMainWindow):
         self.leSearch = self.findChild(QtWidgets.QLineEdit, 'leSearch')
 
         self.sbNPages = self.findChild(QtWidgets.QSpinBox, 'sbNPages')
-        self.sbPrice = self.findChild(QtWidgets.QDoubleSpinBox, 'sbPrice')
+        self.sbPrice = self.findChild(QtWidgets.QDoubleSpinBox, 'dsbPrice')
         self.sbPublicationYear = self.findChild(QtWidgets.QSpinBox, 'sbPublicationYear')
         
         self.cbMessageType = self.findChild(QtWidgets.QComboBox, 'cbMessageType')
@@ -36,36 +37,59 @@ class UI(QtWidgets.QMainWindow):
         self.twBooks.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         
         self.btnAdd.clicked.connect(self.btn_add_clicked)
-        self.btnClear.clicked.connect(self.btn_clear_clicked)
+        self.btnClear.clicked.connect(self.clear_input_fields)
         self.btnDelete.clicked.connect(self.btn_delete_clicked)
         self.btnMessage.clicked.connect(self.btn_message_clicked)
 
         self.show()
 
+    def closeEvent(self, event) -> None:
+        answer = QtWidgets.QMessageBox.question(self, 'Выход', 'Вы точно хотите выйти?')
+        if answer == QtWidgets.QMessageBox.No:
+            event.ignore()
+        else:
+            super(QtWidgets.QMainWindow, self).closeEvent(event)
+
     def init_tool_bar(self):
-        open_act = QtWidgets.QAction('Открыть', self)
+        open_act = QAction('Открыть', self)
         open_act.triggered.connect(self.handler.read_books_file)
 
-        exit_act = QtWidgets.QAction('Выйти', self)
+        exit_act = QAction('Выйти', self)
         exit_act.triggered.connect(self.close)
 
-        save_act = QtWidgets.QAction('Сохранить', self)
-        save_act.triggered.connect(self.handler.write_books_file)
+        save_act = QAction('Сохранить', self)
+        save_act.triggered.connect(self.handler.save_books_file)
 
-        save_as_act = QtWidgets.QAction('Сохранить как...', self)
-        # save_as_act.triggered.connect()
+        save_as_act = QAction('Сохранить как...', self)
+        save_as_act.triggered.connect(self.handler.save_book_file_as)
 
         self.statusBar()
 
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu('Файл')
+        about_act = QAction('Справка', self)
+        about_act.triggered.connect(self.show_about_msg)
+        menu_bar.addAction(about_act)
 
         file_menu.addAction(open_act)
         file_menu.addAction(save_act)
+        file_menu.addAction(save_as_act)
         file_menu.addAction(exit_act)
 
-        self.setWindowTitle('Toolbar')
-        
+        self.setWindowTitle('Lab5')
+
+    def show_about_msg(self):
+        message = QtWidgets.QMessageBox(self)
+        message.setText('Евдокимов Н.А. 71-ПГ')
+        message.setWindowTitle('Сообщение')
+        message.setIcon(QtWidgets.QMessageBox.Information)
+
+        message.exec()
+
+    def read_books_file(self):
+        self.handler.read_books_file()
+        self.repaint_table()
+
     def btn_delete_clicked(self, event):
         if len(self.twBooks.selectedIndexes()) <= 0:
             return
@@ -141,7 +165,7 @@ class UI(QtWidgets.QMainWindow):
         self.handler.add_book(name, pub_year, n_pages, isbn, authors, publisher, price)
         self.repaint_table()
 
-    def btn_clear_clicked(self, event):
+    def clear_input_fields(self):
         self.leName.setText('')
         self.lePublisher.setText('')
         self.leAuthors.setText('')
@@ -154,6 +178,7 @@ class UI(QtWidgets.QMainWindow):
 class Handler:
     def __init__(self, ui):
         self.window = ui
+        self.file_path = None
         self.book_list = []
 
     def read_books_file(self):
@@ -161,18 +186,29 @@ class Handler:
         if len(path) == 0:
             return
 
+        self.file_path = path
         with open(path, 'rb') as f:
             try:
                 self.book_list = p.load(f)
             except EOFError:
                 self.book_list = []
 
-    def write_books_file(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(self.window, 'Выберите файл')[0]
+    def save_books_file(self):
+        if self.file_path is None:
+            self.save_book_file_as()
+            return
+
+        path = self.file_path
+        with open(path, 'wb') as f:
+            p.dump(self.book_list, f)
+
+    def save_book_file_as(self):
+        path = QtWidgets.QFileDialog.getSaveFileName(self.window, 'Выберите файл')[0]
 
         if len(path) == 0:
             return
 
+        self.file_path = path
         with open(path, 'wb') as f:
             p.dump(self.book_list, f)
 
@@ -184,7 +220,7 @@ class Handler:
 
         book = Book(name, publication_year, n_pages, isbn, authors, publisher, price)
         self.book_list.append(book)
-        self.write_books_file()
+        # self.write_books_file()
 
     def remove_book(self, book_name):
         index = -1
@@ -197,7 +233,7 @@ class Handler:
             return
 
         self.book_list.pop(index)
-        self.write_books_file()
+        # self.write_books_file()
 
 
 if __name__ == '__main__':
