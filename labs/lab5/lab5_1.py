@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QAction
-import sys
 from lab3.Book import Book
+import sys
 import pickle as p
 
 
