@@ -43,6 +43,7 @@ class UI(QtWidgets.QMainWindow):
 
         self.setWindowTitle('Lab7')
 
+        self.handler.read_books_file()
         self.show()
 
     def closeEvent(self, event) -> None:
@@ -136,8 +137,6 @@ class UI(QtWidgets.QMainWindow):
 
                 return
 
-
-
         self.handler.add_book(name, pub_year, n_pages, isbn, authors, publisher, price)
         self.repaint_table()
 
@@ -164,35 +163,39 @@ class Handler:
         )
 
     def read_books_file(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(self.window, 'Выберите файл')[0]
-        if len(path) == 0:
-            return
+        self.book_list = []
 
-        self.file_path = path
-        with open(path, 'rb') as f:
-            try:
-                self.book_list = p.load(f)
-            except EOFError:
-                self.book_list = []
+        cursor = self.db.cursor()
+        sql_statement = 'SELECT books.id, books.num_pages, books.pub_year, books.price, books.name, ' \
+                        'books.isbn_id, books.publisher_id FROM books'
+        cursor.execute(sql_statement)
+        selected_books = cursor.fetchall()
 
-    def save_books_file(self):
-        if self.file_path is None:
-            self.save_book_file_as()
-            return
+        for selected_book in selected_books:
+            # get isbn
+            sql_statement = 'SELECT isbn.name FROM isbn WHERE isbn.id = %s'
+            cursor.execute(sql_statement, (selected_book[5], ))
+            isbn = cursor.fetchall()[0][0]
 
-        path = self.file_path
-        with open(path, 'wb') as f:
-            p.dump(self.book_list, f)
+            # get publisher
+            sql_statement = 'SELECT publisher.name FROM publisher WHERE publisher.id = %s'
+            cursor.execute(sql_statement, (selected_book[6], ))
+            publisher = cursor.fetchall()[0][0]
 
-    def save_book_file_as(self):
-        path = QtWidgets.QFileDialog.getSaveFileName(self.window, 'Выберите файл')[0]
+            # get_authors
+            sql_statement = 'SELECT author.name FROM books ' \
+                            'INNER JOIN author_has_books ON author_has_books.books_id = books.id ' \
+                            'INNER JOIN author ON author_has_books.author_id = author.id ' \
+                            'WHERE books.id = %s'
+            cursor.execute(sql_statement, (selected_book[0], ))
+            authors = [author_name[0] for author_name in cursor.fetchall()]
 
-        if len(path) == 0:
-            return
+            book = Book(selected_book[4], selected_book[2], selected_book[1],
+                        isbn, authors, publisher, selected_book[3])
+            self.book_list.append(book)
 
-        self.file_path = path
-        with open(path, 'wb') as f:
-            p.dump(self.book_list, f)
+        cursor.close()
+        self.window.repaint_table()
 
     def add_book(self, name, publication_year, n_pages,
                  isbn, authors, publisher, price):
@@ -253,17 +256,28 @@ class Handler:
             cursor.execute(sql_statement, (author_id, book_id))
             self.db.commit()
 
+        cursor.close()
+
     def remove_book(self, book_name):
-        index = -1
-        for i, book in enumerate(self.book_list):
-            if book.name == book_name:
-                index = i
-                break
+        cursor = self.db.cursor()
+        sql_statement = 'DELETE FROM books WHERE books.name = %s'
+        cursor.execute(sql_statement, (book_name, ))
+        cursor.close()
+        self.db.commit()
 
-        if index < 0:
-            return
+        cursor.close()
+        self.read_books_file()
 
-        self.book_list.pop(index)
+        # index = -1
+        # for i, book in enumerate(self.book_list):
+        #     if book.name == book_name:
+        #         index = i
+        #         break
+        #
+        # if index < 0:
+        #     return
+        #
+        # self.book_list.pop(index)
         # self.write_books_file()
 
 
