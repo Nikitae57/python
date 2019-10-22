@@ -5,7 +5,7 @@ from lab6.server.handler import Handler
 
 class Server:
     HOST = ''
-    PORT = 1235
+    PORT = 1234
 
     def __init__(self):
         self.handler = Handler()

@@ -50,11 +50,15 @@ class UI(QtWidgets.QMainWindow):
     def show_result(self, num_right: int):
         self.scoreLabel.setText('Ваш результат: {}'.format(num_right))
         self.scoreLabel.setVisible(True)
+        self.quizText.hide()
+
+        for btn in self.buttons:
+            btn.hide()
 
 
 class Handler:
     HOST = 'localhost'
-    PORT = 1235
+    PORT = 1234
 
     def __init__(self, ui: UI):
         self.ui = ui
