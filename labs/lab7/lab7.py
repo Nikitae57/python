@@ -260,6 +260,17 @@ class Handler:
 
     def remove_book(self, book_name):
         cursor = self.db.cursor()
+
+        # get book id
+        sql_statement = 'SELECT books.id FROM books WHERE books.name = %s'
+        cursor.execute(sql_statement, (book_name, ))
+        book_id = cursor.fetchall()[0][0]
+
+        # delete from author_has_books
+        sql_statement = 'DELETE FROM author_has_books WHERE author_has_books.books_id = %s'
+        cursor.execute(sql_statement, (book_id, ))
+        self.db.commit()
+
         sql_statement = 'DELETE FROM books WHERE books.name = %s'
         cursor.execute(sql_statement, (book_name, ))
         cursor.close()

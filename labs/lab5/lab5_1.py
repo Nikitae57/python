@@ -192,6 +192,7 @@ class Handler:
                 self.book_list = p.load(f)
             except EOFError:
                 self.book_list = []
+        self.window.repaint_table()
 
     def save_books_file(self):
         if self.file_path is None:
