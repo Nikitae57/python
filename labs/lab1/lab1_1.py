@@ -22,5 +22,12 @@ while n is None:
     except ValueError:
         n = None
 
-result = 3 * m.pow(m.cos(x - m.pi / 6), n) / (1 / 2 + m.sin(y))
+m = None
+while m is None or m == 0:
+    try:
+        m = float(input('Введите m: '))
+    except ValueError:
+        m = None
+
+result = m.pow(y, 1 / n) * (m.sin(m.pow(y, 2)) + m.pow(m.cos(y), 2)) + m.pow(x, m.pow(n, m)) / m
 print('Результат вычислений:', result)
